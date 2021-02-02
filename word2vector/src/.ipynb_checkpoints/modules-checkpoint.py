@@ -57,7 +57,7 @@ class Word2VecModel(nn.Module):
         vocab_vectors = self.linear_layer(embedding_vectors)       #vocab_vectors size = [batch, vocab_size]
         return vocab_vectors
     
-    def inference(self, inputs: list) --> list:
+    def inference(self, inputs: list) -> list:
         """Inference the word to vector
         
         Args: 
