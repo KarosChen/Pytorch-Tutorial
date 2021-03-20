@@ -1,17 +1,7 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[6]:
-
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.utils.data as data
-
-
-# In[1]:
-
 
 class Word2VecModel(nn.Module):
     """This is a word2vector model
@@ -20,11 +10,11 @@ class Word2VecModel(nn.Module):
     that were used to train model
     
     Attributes:
-        vocab_size: the total number of vocab
-        embedding_dim: the dimension of embedding vecotor
-        batch_size: the number of size were used to train or inference
-        bag_size: the numbers of context vector
-        skip_gram: use skip_gram or CBOW mode
+        vocab_size(int): the total number of vocab
+        embedding_dim(int): the dimension of embedding vecotor
+        batch_size(int): the number of size were used to train or inference
+        bag_size(int): the numbers of context vector
+        skip_gram(bool): use skip_gram or CBOW mode
     """
     def __init__(self, vocab_size: int, embedding_dim: int, batch_size: int, bag_size: int, skip_gram: bool=True):
         super().__init__()
@@ -37,37 +27,37 @@ class Word2VecModel(nn.Module):
         self.embedding_layer = nn.Embedding(self.vocab_size, self.embedding_dim)
         self.linear_layer = nn.Linear(self.embedding_dim, self.vocab_size)
         
-    def forward(self, inputs: list) -> list:
+    def forward(self, inputs: torch.Tensor) -> torch.Tensor:
         """Train the model
         
         Args: 
-            inputs: size = [batch, bag_size]: training data
+            inputs(torch.Tensor): training data (batch, bag_size)
         
         Returns:
-            return the prob distribution of vocab
+            torch.Tensor: the prob distribution of vocab
         """
         if self.skip_gram:
-            embedding_vectors = self.embedding_layer(inputs)       # embedding_vectors size = [batch, embedding_dim]
+            embedding_vectors = self.embedding_layer(inputs)       # (batch, embedding_dim)
         else:
             embedding_vectors = []
-            inputs = inputs.view(-1)                               # inputs size = [batch * bag_size]
-            embedding_vectors = self.embedding_layer(inputs)       # embedding_vectors size = [batch * bag_size, embedding_dim]
-            embedding_vectors = embedding_vectors.view(self.batch_size, -1, self.embedding_dim) #embedding_vectors size = [batch, bag_size, embedding_dim]
-            embedding_vectors = torch.div(torch.sum(embedding_vectors, 1), self.bag_size) # embedding_vectors size = [batch, embedding_dim]
-        vocab_vectors = self.linear_layer(embedding_vectors)       #vocab_vectors size = [batch, vocab_size]
+            inputs = inputs.view(-1)                               # (batch * bag_size)
+            embedding_vectors = self.embedding_layer(inputs)       # (batch * bag_size, embedding_dim)
+            embedding_vectors = embedding_vectors.view(self.batch_size, -1, self.embedding_dim) # (batch, bag_size, embedding_dim)
+            embedding_vectors = torch.div(torch.sum(embedding_vectors, 1), self.bag_size) # (batch, embedding_dim)
+        vocab_vectors = self.linear_layer(embedding_vectors)       #(batch, vocab_size)
         return vocab_vectors
     
-    def inference(self, inputs: list) -> list:
+    def inference(self, inputs: torch.Tensor) -> torch.Tensor:
         """Inference the word to vector
         
         Args: 
-            inputs: size = [batch * seq_len]: inferenced sequence
+            inputs(torch.Tensor): inferenced sequence (batch * seq_len): 
         
         Returns:
-            return the embedding vectors of each input words
+            torch.Tensor: embedding vectors of each input words
         """
         inputs = inputs.view(-1)
-        embedding_vectors = self.embedding_layer(inputs) # embedding_vectors size = [batch * seq_len, embedding_dim]
-        embedding_vectors = embedding_vectors.view(self.batch_size, -1, self.embedding_dim) # preds size = [batch, seq_len, embedding_dim]
+        embedding_vectors = self.embedding_layer(inputs) # (batch * seq_len, embedding_dim)
+        embedding_vectors = embedding_vectors.view(self.batch_size, -1, self.embedding_dim) # (batch, seq_len, embedding_dim)
         return embedding_vectors
 
