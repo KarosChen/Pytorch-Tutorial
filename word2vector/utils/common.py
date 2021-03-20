@@ -1,17 +1,7 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[6]:
-
-
 import csv
 import string
 import os
-from . import modules
-
-
-# In[7]:
-
+import model.word2vec
 
 def read_data(path_name: str) -> list:
     """read data from csv file
@@ -20,10 +10,10 @@ def read_data(path_name: str) -> list:
     This function extract abstract and split it to sentences without punctuation.
     
     Args:
-        path_name: the path of data that will be loaded
+        path_name(str): the path of data that will be loaded
     
     Returns:
-        the sentences without punctuation
+        list: the sentences without punctuation
     """
     no_punc_sentences = []
     if os.path.isfile(path_name):
@@ -42,53 +32,41 @@ def read_data(path_name: str) -> list:
         print("File is not exist!")
     return no_punc_sentences
 
-
-# In[8]:
-
-
-def save_model(model: modules.Word2VecModel, store_path: str, loss: float, epoch: int):
+def save_model(model: model.word2vec, store_path: str, loss: float, epoch: int):
     """Save model
     
     Args:
-        model: the model will be saved
-        store_path: the store path
-        loss: the model loss
-        epoch: the model in which epoch
+        model(model.word2vec): the model will be saved
+        store_path(str): the store path
+        loss(float): the model loss
+        epoch(int): the model in which epoch
     """
     torch.save(model.state_dict(), "{}/model_{}_{:.3f}.ckpt".format(store_path, epoch, loss))
 
-
-# In[ ]:
-
-
-def load_model(model: modules.Word2VecModel, load_path: str) -> modules.Word2VecModel:
+def load_model(model: model.word2vec, load_path: str) -> model.word2vec:
     """Load model
     
     Args: 
-        model: the model will be saved
-        load_path: the load path
+        model(model.word2vec): the model will be saved
+        load_path(str): the load path
     
     Returns:
-        return model
+        model.word2vec: loaded model
     """
     print("Load model from {}".format(load_path))
     model.load_state_dict(torch.load("{}.ckpt".format(load_path)))
     return model
 
-
-# In[ ]:
-
-
-def find_nearest(word: int, top_nearest: int, model: modules.Word2VecModel) -> list:
+def find_nearest(word: int, top_nearest: int, model: model.word2vec) -> list:
     """Find nearest word
     
     Args:
-        word: the index of word
-        top_nearest: the number of nearest word
-        model: model
+        word(int): the index of word
+        top_nearest(int): the number of nearest word
+        model(model.word2vec): model
     
     Returns:
-        return list of indices of nearest words
+        list[int]:  list of indices of nearest words
     """
     parameters = model.embedding_layer.parameters()
     for para in parameters:
@@ -98,9 +76,6 @@ def find_nearest(word: int, top_nearest: int, model: modules.Word2VecModel) -> l
     similarity_vector = similarity_matrix[word]
     (values, indices) = torch.topk(similarity_vector, top_nearest)
     return indices
-
-
-# In[ ]:
 
 
 

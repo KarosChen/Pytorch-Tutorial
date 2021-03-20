@@ -1,28 +1,18 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[30]:
-
-
 import torch
 import torch.utils.data as data
-
-
-# In[77]:
-
 
 class Word2VecDataset(data.Dataset):
     """Make pair word dataset
 
     Attributes:
-        data: the data are maked to dataset
-        window_size: the size of slipped distance
-        bag_size: the size of context number
-        skip_gram: skip_gram or CBOW mode
-        pair_word_data: the pair of inputs and targets
-        word2idx: word map to index dict
-        idx2word: index map to word dict
-        word_prob: every word probability
+        data(list): the data are maked to dataset
+        window_size(int): the size of slipped distance
+        bag_size(int): the size of context number
+        skip_gram(bool): skip_gram or CBOW mode
+        pair_word_data(list[(int, int)]): the pair of inputs and targets
+        word2idx(dict{str: int}): word map to index dict
+        idx2word(dict{int: str}): index map to word dict
+        word_prob(list[float]): every word probability
     """
     def __init__(self, data: list, window_size: int, skip_gram: bool=True):
         self.data = data
@@ -65,7 +55,11 @@ class Word2VecDataset(data.Dataset):
                     self.pair_word_data.append((BOW, self.word2idx[words[idx]]))
     
     def make_dict(self):
-        """Make word2idx and idx2word dict"""
+        """Make word2idx and idx2word dict
+        
+        These dict are used to map input words to index and
+        map index of output to words in training or testing
+        """
         print("Makeing dictionary...")
         self.word2idx["<PAD>"] = len(self.word2idx)
         self.idx2word[len(self.word2idx)] = "<PAD>"
@@ -89,7 +83,7 @@ class Word2VecDataset(data.Dataset):
         self.word_prob = [prob / prob_sum for prob in self.word_prob]
         
     def __getitem__(self, idx: int) -> list:
-        """Get the item in dataset"""
+        """Get the item by passing index in dataset"""
         return self.pair_word_data[idx]
     
     def __len__(self) -> int:
