@@ -1,7 +1,7 @@
 import csv
 import string
 import os
-import model.word2vec
+from model import word2vec
 
 def read_data(path_name: str) -> list:
     """read data from csv file
@@ -32,7 +32,7 @@ def read_data(path_name: str) -> list:
         print("File is not exist!")
     return no_punc_sentences
 
-def save_model(model: model.word2vec, store_path: str, loss: float, epoch: int):
+def save_model(model: word2vec.Word2VecModel, store_path: str, loss: float, epoch: int):
     """Save model
     
     Args:
@@ -43,7 +43,7 @@ def save_model(model: model.word2vec, store_path: str, loss: float, epoch: int):
     """
     torch.save(model.state_dict(), "{}/model_{}_{:.3f}.ckpt".format(store_path, epoch, loss))
 
-def load_model(model: model.word2vec, load_path: str) -> model.word2vec:
+def load_model(model: word2vec.Word2VecModel, load_path: str) -> word2vec.Word2VecModel:
     """Load model
     
     Args: 
@@ -57,7 +57,7 @@ def load_model(model: model.word2vec, load_path: str) -> model.word2vec:
     model.load_state_dict(torch.load("{}.ckpt".format(load_path)))
     return model
 
-def find_nearest(word: int, top_nearest: int, model: model.word2vec) -> list:
+def find_nearest(word: int, top_nearest: int, model: word2vec.Word2VecModel) -> list:
     """Find nearest word
     
     Args:
