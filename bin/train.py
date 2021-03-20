@@ -3,6 +3,8 @@ import torch.utils.data as data
 
 from utils import dataset
 from utils import configure
+from utils import executor
+from utils import common
 from model import word2vec
 
 def train(training_dataset: dataset.Word2VecDataset, config: configure.Config):
@@ -20,5 +22,5 @@ def train(training_dataset: dataset.Word2VecDataset, config: configure.Config):
     
     for epoch in range(config.epochs):
         print("Epoch [{}/{}]".format(epoch + 1, config.epochs))
-        epoch_avg_loss = train_step(model, training_loader, device, config)
-        save_model(model, config.save_path, epoch_avg_loss, epoch)
+        epoch_avg_loss = executor.train_step(model, training_loader, device, config)
+        common.save_model(model, config.save_path, epoch_avg_loss, epoch)
