@@ -61,3 +61,17 @@ class Word2VecModel(nn.Module):
         embedding_vectors = embedding_vectors.view(self.batch_size, -1, self.embedding_dim) # (batch, seq_len, embedding_dim)
         return embedding_vectors
 
+def init_word2vec_model(vocab_size: int, embedding_dim: int, batch_size: int, bag_size: int, skip_gram: bool=True):
+    """Init a word2vec model
+    
+    Args:
+        vocab_size(int): the total number of vocab
+        embedding_dim(int): the dimension of embedding vecotor
+        batch_size(int): the number of size were used to train or inference
+        bag_size(int): the numbers of context vector
+        skip_gram(bool): use skip_gram or CBOW mode
+    
+    Returns:
+        Word2VecModel: model
+    """
+    return Word2VecModel(vocab_size, embedding_dim, batch_size, bag_size, skip_gram)

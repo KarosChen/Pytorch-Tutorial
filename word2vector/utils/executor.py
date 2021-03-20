@@ -2,7 +2,7 @@ import torch
 import torch.utils.data as data
 import torch.nn as nn
 
-import configure
+from utils import configure
 from model import word2vec
 
 def train_step(model: word2vec.Word2VecModel, training_loader: data.DataLoader, device: torch.device, config: configure.Config) -> float:
