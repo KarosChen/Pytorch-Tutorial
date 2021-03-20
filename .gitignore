@@ -4,6 +4,6 @@ _pycache__
 
 datasets
 
-notebook
-
 ckpt
+
+*.ipynb
