@@ -27,9 +27,26 @@ def train_step(model: word2vec.Word2VecModel, training_loader: data.DataLoader, 
     for step, (inputs, targets) in enumerate(training_loader):
         optimizer.zero_grad()
         
+        # Skip-Gram:
+        #     inputs: torch.Tensor(batch_size) to torch.Tensor(batch_size * bag_size)
+        #     targets:list[torch.Tensor](bag_size, batch_size) to torch.Tensor(batch_size * bag_size)
+        # CBOW:
+        #     inputs: list[torch.Tensor](bag_size, batch_size) to torch.Tensor(batch_size, bag_size)
+        #     targets: torch.Tensor(batch_size)
+        
+        if config.mode is True:
+            bag_size = len(targets)
+            inputs = torch.transpose(inputs.repeat(bag_size, 1), 0, 1).contiguous().view(-1)  
+            targets = torch.transpose(torch.stack(targets), 0, 1).contiguous().view(-1)
+        else:
+            bag_size = len(inputs)
+            inputs = torch.transpose(torch.stack(inputs), 0, 1).contiguous().view(-1)  
+            #targets = torch.transpose(torch.repeat(bag_size, 1), 0, 1).contiguous().view(-1)
+        
         inputs = inputs.to(device)
-        targets = inputs.to(device)
+        targets = targets.to(device)
         outputs = model(inputs)
+        
         loss = loss_function(outputs, targets)
         
         loss.backward()

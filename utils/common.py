@@ -76,7 +76,7 @@ def find_nearest(word: int, top_nearest: int, model: word2vec.Word2VecModel) -> 
     similarity_matrix = torch.mm(parameters, torch.transpose(parameters, 0, 1))
     similarity_vector = similarity_matrix[word]
     (values, indices) = torch.topk(similarity_vector, top_nearest)
-    return indices
+    return values, indices
 
 
 

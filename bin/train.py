@@ -16,7 +16,6 @@ def train(training_dataset: dataset.Word2VecDataset, config: configure.Config):
     """
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     training_loader = data.DataLoader(training_dataset, batch_size=config.batch_size, shuffle=True)
-    
     model = word2vec.init_word2vec_model(config.vocab_size, config.embedding_dim, config.batch_size, config.bag_size, config.mode)
     model = model.to(device)
     

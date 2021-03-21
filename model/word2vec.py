@@ -31,20 +31,16 @@ class Word2VecModel(nn.Module):
         """Train the model
         
         Args: 
-            inputs(torch.Tensor): training data (batch, bag_size)
+            inputs(torch.Tensor): training data (batch * bag_size)
         
         Returns:
             torch.Tensor: the prob distribution of vocab
         """
-        if self.skip_gram:
-            embedding_vectors = self.embedding_layer(inputs)       # (batch, embedding_dim)
-        else:
-            embedding_vectors = []
-            inputs = inputs.view(-1)                               # (batch * bag_size)
-            embedding_vectors = self.embedding_layer(inputs)       # (batch * bag_size, embedding_dim)
+        embedding_vectors = self.embedding_layer(inputs)      # (batch * bag_size, embedding_dim)
+        if self.skip_gram is False:
             embedding_vectors = embedding_vectors.view(self.batch_size, -1, self.embedding_dim) # (batch, bag_size, embedding_dim)
             embedding_vectors = torch.div(torch.sum(embedding_vectors, 1), self.bag_size) # (batch, embedding_dim)
-        vocab_vectors = self.linear_layer(embedding_vectors)       #(batch, vocab_size)
+        vocab_vectors = self.linear_layer(embedding_vectors)       #if skip_gram (batch * bag_size, vocab_size) else (batch, vocab_size)
         return vocab_vectors
     
     def inference(self, inputs: torch.Tensor) -> torch.Tensor:
